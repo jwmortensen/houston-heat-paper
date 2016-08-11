@@ -189,13 +189,13 @@ of the location for the $i^{\text{th}}$
 individual who experienced health outcome $p$ where $i=1,2,\dots,n_p$, $p=1,2,\dots,P$, 
 such that $P$ is the total number of health outcomes under consideration (in this article, $P=2$),
 and $n_p$ is the total number of individuals who experienced health outcome $p$.
-Likewise, let $a_{pi} \in \left\{0,1,2,\dots,100\right\}$ represent the age of the $i^{\text{th}}$ individual who
+Likewise, let $a_{pi} \in \left\{0,1,2,\dots,113\right\}$ represent the age of the $i^{\text{th}}$ individual who
 experienced health outcome $p$; 
 $g_{pi} \in \left\{\text{female}, \text{male}\right\}$ represent the gender of individual $i$ who experienced health 
 outcome $p$; and $e_{pi} \in \left\{\text{Asian}, \text{Black}, \text{Hispanic}, 
 \text{White}\right\}$ be the race/ethnicity of individual $i$ who experienced health
-outcome $p$. The upper bound of 100 for age was chosen arbitrarily but, in our data, 
-there were no individuals with an age greater than 100. For other applications, this upper 
+outcome $p$. The upper bound of 113 for age was chosen arbitrarily but, in our data, 
+there were no individuals with an age greater than 113. For other applications, this upper 
 bound may need to be adjusted to account for the possibility of older ages. 
 Finally, define $\mathbf{z}_{pi} = (\mathbf{s}_{pi}',a_{pi},g_{pi},e_{pi})' \in 
 \mathcal{Z}$ to be the vector of realized spatial locations and marks.
@@ -275,9 +275,9 @@ grid cell $k$. When $\phi_{pk}^\star >0$ then grid cell $k$ is said to have an e
 risk of heat-related health outcome $p$. Likewise, when $\phi_{pk}^\star < 0$ then grid 
 cell $k$ is said to have a decreased risk of heat-related health outcome $p$. 
 
-The population data used to calculate $E_{pk}$ was taken from the 2010 census. 
+The population data used to calculate $E_{pk}$ was taken from the 2000 census. 
 Over the area covered
-by our $1428$ grid cells there are $1536$ irregularly shaped census block groups. We handle
+by our $1428$ grid cells there are $1461$ irregularly shaped census block groups. We handle
 the misalignment between the block groups and our grid cells using a method outlined
 by \cite{Brunsdon2015}. In this process we calculate the intersection
 between grid cells and census block groups and use this to calculate the proportion of
@@ -296,10 +296,12 @@ within grid cell $k$ as $$\text{Pop}_k = \sum_{i=1}^{N} \omega_{ki}\cdot \text{C
 where $N$ is the total
 number of census block groups that intersect with grid cell $k$. Therefore, population within
 a given block group is distributed among intersecting grid cells based on the proportion
-of the group contained within a given grid cell. One obvious weakness of this 
+of the group contained within a given grid cell. One weakness of this 
 method is that it assumes that the population within
 a census block group is distributed equally throughout that group, which is almost
-certainly not the case; however, due to restrictions on census data, demographic information (which we use elsewhere in the model) is not available at a finer resolution. As a result, we feel this approach is justified in order to keep all census data incorporated in the model on the same scale.
+certainly not the case. Unfortunately, due to restrictions on census data, demographic information (which we use elsewhere in the model) is not available at a finer resolution. As a result, we feel this approach is justified in order to keep all census data incorporated in the model on the same scale.
+
+A potential solution to avoid realigning the census data to the grid cells is to let the census block groups equal the $\mathcal{G}_k$ denoted in \eqref{lambda} rather than the grid cells. However, the heat information used in this research (described in detail in Section \ref{sec:temp_data}) is provided at a 1-km$^2$ resolution and these grid cells were chosen to align exactly with the available heat data. Using the block groups in place of the grid cells would necessitate aligning the heat information to the census block group areas. Because heat is our primary variable of interest we prefer realigning the demographic information to the grid associated with the heat data as opposed to the alternative. Therefore, we proceed having aligned the population data as described. 
 
 
 Now let $\mathbf{Z}_p = \{\mathbf{z}_{pi}\}_{i=1}^{n_p}$ be the collection of observations for
@@ -369,7 +371,7 @@ through inference on the parameters $\boldsymbol{\beta}$.
 At the hyperior prior layer of the model, we outline our prior assumptions for the model 
 parameters in Sections \ref{likelayer} and \ref{process}. Because $\boldsymbol{\alpha}_p = 
 (\alpha_p(0),\dots,\alpha_p(100))'$ are probabilities where $\sum_a \alpha_p(a) = 1$, 
-we assume $\boldsymbol{\alpha}_{p} \sim \text{Dir}(2\times\mathbf{1}_{100})$ for all $p$ where 
+we assume $\boldsymbol{\alpha}_{p} \sim \text{Dir}(\mathbf{1}_{100})$ for all $p$ where 
 $\text{Dir}(\cdot)$ denotes the Dirichlet distribution and $\mathbf{1}_{100}$ is a $1\times 100$ vector of ones. This prior specification is both non-informative and conjugate. 
 Using the likelihood in \eqref{likelihood}, note that the posterior distribution for 
 $\boldsymbol{\alpha}_p$ is
