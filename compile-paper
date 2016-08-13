@@ -1,0 +1,7 @@
+#!/bin/sh
+
+pdflatex jrssc-mpp
+bibtex jrssc-mpp
+pdflatex jrssc-mpp
+pdflatex jrssc-mpp
+fswatch -1 . | xargs -n1 ./compile-paper

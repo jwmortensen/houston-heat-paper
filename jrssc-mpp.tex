@@ -311,7 +311,7 @@ in \eqref{Lambda} and \eqref{lambda}.  Assuming $\mathbf{z}_{pi} \perp \mathbf{z
 using the derivation in Section 8.4 of \cite{Banerjee2014}, the likelihood for the 
 above parameters is
 \begin{align}
-L(\boldsymbol{\theta} \mid \{\mathbf{Z}_p\}) &=  \prod_{p=1}^P\left[\exp\left(-\int_\mathcal{Z}\Lambda_p
+f(\{\mathbf{Z}_p\} \mid \boldsymbol{\theta}) &=  \prod_{p=1}^P\left[\exp\left(-\int_\mathcal{Z}\Lambda_p
 (\mathbf{z})d\mathbf{x}\right)\prod_{i=1}^{n_p}\Lambda(\mathbf{z}_{ip})\right] \notag \\
 &= \prod_{p=1}^P\left[\exp\left(-\delta_p\right)\delta_p^{n_p}\prod_{i=1}^{n_p}
 \alpha_p(a_{pi})\gamma_p(g_{pi})\xi_p(e_{pi})\lambda_p(\mathbf{s}_{pi})\right],
@@ -370,22 +370,21 @@ through inference on the parameters $\boldsymbol{\beta}$.
 \subsection{Hyperprior Layer}
 At the hyperior prior layer of the model, we outline our prior assumptions for the model 
 parameters in Sections \ref{likelayer} and \ref{process}. Because $\boldsymbol{\alpha}_p = 
-(\alpha_p(0),\dots,\alpha_p(100))'$ are probabilities where $\sum_a \alpha_p(a) = 1$, 
-we assume $\boldsymbol{\alpha}_{p} \sim \text{Dir}(\mathbf{1}_{100})$ for all $p$ where 
-$\text{Dir}(\cdot)$ denotes the Dirichlet distribution and $\mathbf{1}_{100}$ is a $1\times 100$ vector of ones. This prior specification is both non-informative and conjugate. 
-Using the likelihood in \eqref{likelihood}, note that the posterior distribution for 
-$\boldsymbol{\alpha}_p$ is
+(\alpha_p(0),\dots,\alpha_p(113))'$ are probabilities where $\sum_a \alpha_p(a) = 1$, 
+we assume $$\boldsymbol{\alpha}_{p} \sim \text{Dir}(\mathbf{1}_{113})$$ for all $p$ where 
+$\text{Dir}(\cdot)$ denotes the Dirichlet distribution and $\mathbf{1}_{113}$ is a $1\times 113$ vector of ones. Note that for a symmetric Dirichlet distribution with a concentration parameter of 1 across $M$ categories, its density function simplifies to 
+\begin{equation}
+\frac{1}{C}\prod_{i=1}^M x_i^{1 - 1} = \frac{1}{C},
+\end{equation}
+where $C$ is a constant. Therefore, assuming $\boldsymbol\alpha_p \sim \text{Dir}(\mathbf{1}_{113})$ is equivalent to applying a uniform prior to $\boldsymbol\alpha_p$, and it follows that it is non-informative. Further, if we let $f(\boldsymbol\alpha_p \mid \mathbf{Z}_p)$ represent the posterior distribution for $\alpha_p$ and $n_{pa}$ be the number of people who experienced health outcome $p$ at age $a$, then we can use the likelihood in \eqref{likelihood} to show that the Dirichlet prior described for $\boldsymbol{\alpha}_p$ is conjugate:  
 \begin{align}
-\text{post}(\boldsymbol{\alpha}_p) &\propto \left[\prod_{a=0}^{100} \alpha_p^{n_{pa}}(a)\right]
-\left[\prod_{a=0}^{100}\alpha_p^{2-1}(a)\right] \notag \\
-&= \prod_{a=0}^{100} \alpha_p^{n_{pa}+2-1}(a),
-\label{apost}
+f(\boldsymbol{\alpha}_p \mid \mathbf{Z}_p) &\propto \text{f}(\boldsymbol{\alpha}_p)f(\mathbf{Z}_p \mid \boldsymbol\Theta) \notag \\
+&\propto \left[\prod_{a=0}^{113}\left(\alpha_p(a)\right)^{1-1}\right]\left[\prod_{a=0}^{113} \left(\alpha_p(a)\right)^{n_{pa}}\right]  \label{apost} \\
+&= \prod_{a=0}^{113} \left(\alpha_p(a)\right)^{(n_{pa}+1)-1}. \notag
 \end{align} 
-where $n_{pa}$ is the number of individuals who experienced health outcome $p$ and were age 
-$a$. The form of the posterior distribution in \eqref{apost} is $\text{Dir}(n_{p0}+2,n_{p1}+2,
-\dots,n_{p100}+2)$. Similar prior distributions were assumed for $\{\gamma_p(g)\}_{p,g}$ 
-and $\{\xi_p(e)\}_{p,e}$.
+In a similar vein, we assume $$\boldsymbol\gamma_p = (\gamma_p(\text{female}), \gamma_p(\text{male}))' \sim \text{Dir}(\mathbf{1}_2)$$ and $$\boldsymbol\xi_p = (\xi_p(\text{Asian}), \dots, \xi_p(\text{White}))' \sim \text{Dir}(\mathbf{1}_4),$$ which, by the same argument, are also non-informative and conjugate priors. 
 
+%%% NOTE: STILL NEED TO DESCRIBE WHY IG PRIORS ARE APPROPRIATE %%%%
 Our approach for the remaining unknown parameters is to assume vague priors (and conjugate 
 where possible). We assume $\{\sigma^2_p\}$ and $\sigma^2_\mu$ are independent 
 $\mathcal{IG}\left(2, 1\right)$ 

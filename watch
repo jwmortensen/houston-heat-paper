@@ -1,0 +1,3 @@
+#!/bin/sh
+
+fswatch -1 . | xargs -n1 ./compile-paper
