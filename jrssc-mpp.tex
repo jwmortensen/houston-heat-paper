@@ -301,7 +301,7 @@ method is that it assumes that the population within
 a census block group is distributed equally throughout that group, which is almost
 certainly not the case. Unfortunately, due to restrictions on census data, demographic information (which we use elsewhere in the model) is not available at a finer resolution. As a result, we feel this approach is justified in order to keep all census data incorporated in the model on the same scale.
 
-A potential solution to avoid realigning the census data to the grid cells is to let the census block groups equal the $\mathcal{G}_k$ denoted in \eqref{lambda} rather than the grid cells. However, the heat information used in this research (described in detail in Section \ref{sec:temp_data}) is provided at a 1-km$^2$ resolution and these grid cells were chosen to align exactly with the available heat data. Using the block groups in place of the grid cells would necessitate aligning the heat information to the census block group areas. Because heat is our primary variable of interest we prefer realigning the demographic information to the grid associated with the heat data as opposed to the alternative. Therefore, we proceed having aligned the population data as described. 
+\textcolor{red}{A potential solution to avoid realigning the census data to the grid cells is to let the census block groups equal the $\mathcal{G}_k$ denoted in \eqref{lambda} rather than the grid cells. However, the heat information used in this research (described in detail in Section \ref{sec:temp_data}) is provided at a 1-km$^2$ resolution and these grid cells were chosen to align exactly with the available heat data. Using the block groups in place of the grid cells would necessitate aligning the heat information to the census block group areas. Because heat is our primary variable of interest we prefer realigning the demographic information to the grid associated with the heat data as opposed to the alternative. Therefore, we proceed having aligned the population data as described.}
 
 
 Now let $\mathbf{Z}_p = \{\mathbf{z}_{pi}\}_{i=1}^{n_p}$ be the collection of observations for
@@ -368,7 +368,7 @@ poverty, age, or urban temperature affect the height of the global intensity sur
 through inference on the parameters $\boldsymbol{\beta}$.
 
 \subsection{Hyperprior Layer}
-At the hyperior prior layer of the model, we outline our prior assumptions for the model 
+\textcolor{red}{At the hyperior prior layer of the model, we outline our prior assumptions for the model
 parameters in Sections \ref{likelayer} and \ref{process}. Because $\boldsymbol{\alpha}_p = 
 (\alpha_p(0),\dots,\alpha_p(113))'$ are probabilities where $\sum_a \alpha_p(a) = 1$, 
 we assume $$\boldsymbol{\alpha}_{p} \sim \text{Dir}(\mathbf{1}_{113})$$ for all $p$ where 
@@ -376,30 +376,31 @@ $\text{Dir}(\cdot)$ denotes the Dirichlet distribution and $\mathbf{1}_{113}$ is
 \begin{equation}
 \frac{1}{C}\prod_{i=1}^M x_i^{1 - 1} = \frac{1}{C},
 \end{equation}
-where $C$ is a constant. Therefore, assuming $\boldsymbol\alpha_p \sim \text{Dir}(\mathbf{1}_{113})$ is equivalent to applying a uniform prior to $\boldsymbol\alpha_p$, and it follows that it is non-informative. Further, if we let $f(\boldsymbol\alpha_p \mid \mathbf{Z}_p)$ represent the posterior distribution for $\alpha_p$ and $n_{pa}$ be the number of people who experienced health outcome $p$ at age $a$, then we can use the likelihood in \eqref{likelihood} to show that the Dirichlet prior described for $\boldsymbol{\alpha}_p$ is conjugate:  
+where $C$ is a constant. Therefore, assuming $\boldsymbol\alpha_p \sim \text{Dir}(\mathbf{1}_{113})$ is equivalent to applying a uniform prior to $\boldsymbol\alpha_p$, and it follows that it is non-informative. Further, if we let $f(\boldsymbol\alpha_p)$ and $f(\boldsymbol\alpha_p \mid \mathbf{Z}_p)$ represent the prior and posterior distributions for $\alpha_p$, respectively, and let $n_{p,a}$ be the number of people who experienced health outcome $p$ at age $a$, then we can use the likelihood in \eqref{likelihood} to show that the Dirichlet prior described for $\boldsymbol{\alpha}_p$ is conjugate:  
 \begin{align}
 f(\boldsymbol{\alpha}_p \mid \mathbf{Z}_p) &\propto \text{f}(\boldsymbol{\alpha}_p)f(\mathbf{Z}_p \mid \boldsymbol\Theta) \notag \\
-&\propto \left[\prod_{a=0}^{113}\left(\alpha_p(a)\right)^{1-1}\right]\left[\prod_{a=0}^{113} \left(\alpha_p(a)\right)^{n_{pa}}\right]  \label{apost} \\
-&= \prod_{a=0}^{113} \left(\alpha_p(a)\right)^{(n_{pa}+1)-1}. \notag
+&\propto \left[\prod_{a=0}^{113}\left(\alpha_p(a)\right)^{1-1}\right]\left[\prod_{a=0}^{113} \left(\alpha_p(a)\right)^{n_{p,a}}\right]  \label{apost} \\
+&= \prod_{a=0}^{113} \left(\alpha_p(a)\right)^{(n_{p,a}+1)-1}. \notag
 \end{align} 
-In a similar vein, we assume $$\boldsymbol\gamma_p = (\gamma_p(\text{female}), \gamma_p(\text{male}))' \sim \text{Dir}(\mathbf{1}_2)$$ and $$\boldsymbol\xi_p = (\xi_p(\text{Asian}), \dots, \xi_p(\text{White}))' \sim \text{Dir}(\mathbf{1}_4),$$ which, by the same argument, are also non-informative and conjugate priors. 
+Stated explicitly, the posterior distribution of $\boldsymbol\alpha_p$ is a Dirichlet distribution with concentration parameters $(n_{p,0} + 1, n_{p,1} + 1, \dots, n_{p,113}+1)$.
+In a similar vein, we assume $$\boldsymbol\gamma_p = (\gamma_p(\text{female}), \gamma_p(\text{male}))' \sim \text{Dir}(\mathbf{1}_2)$$ and $$\boldsymbol\xi_p = (\xi_p(\text{Asian}), \dots, \xi_p(\text{White}))' \sim \text{Dir}(\mathbf{1}_4),$$ which, by the same argument, are also non-informative and conjugate priors.}
 
 %%% NOTE: STILL NEED TO DESCRIBE WHY IG PRIORS ARE APPROPRIATE %%%%
-Our approach for the remaining unknown parameters is to assume vague priors (and conjugate 
-where possible). We assume $\{\sigma^2_p\}$ and $\sigma^2_\mu$ are independent 
-$\mathcal{IG}\left(2, 1\right)$ 
+\textcolor{red}{Our approach for the remaining unknown parameters is to assume vague priors (and conjugate 
+where possible). This is justified because there is sufficient data to learn these parameters without the need to rely heavily on prior information. We assume $\{\sigma^2_p\}$ and $\sigma^2_\mu$ are independent 
+$\mathcal{IG}\left(2.001, 1.001\right)$ 
 random variables where $\mathcal{IG}(a,b)$ denotes the inverse-gamma distribution with scale 
-$a$ and rate $b$. We also assume that $\boldsymbol{\beta} \sim 
-\mathcal{N}(0, 50\mathbf{I}_{Q})$ leading to a Gaussian complete conditional for $\boldsymbol{\beta}$.  
+$a$ and rate $b$, a well-known conjugate prior for normal variance parameters. The $\mathcal{IG}(2.001, 1.001)$ distribution has a variance of 1000, providing sufficient flexibility for the data to accurately dictate the variances. For the regression coefficients we assume that $\boldsymbol{\beta} \sim 
+\mathcal{N}(0, 50\mathbf{I}_{Q})$, leading to a Gaussian complete conditional for $\boldsymbol{\beta}$. 
 Conjugate prior distributions for each spatial smoothness parameter (the $\nu$'s) and decay 
 parameter (the $\psi$'s) are not available; however, following the results of \cite{Zhang2004}, 
 a vague prior for the variance parameters (the $\sigma^2$'s) allows each smoothness and decay 
-parameter to be fixed without loss generality or predictive power.
+parameter to be fixed without loss generality or predictive power.}
 
 \subsection{Model Fitting}
-We fit this model within a Bayesian framework. Because the priors
+\textcolor{red}{We fit this model within a Bayesian framework. Because the priors
 for $\boldsymbol{\alpha}_p$, $\boldsymbol{\gamma}_p$, and $\boldsymbol{\xi}_p$ are all conjugate, their posterior
-distributions are known and can be drawn from directly. The posterior densities for the rest of the parameters are unknown and so we obtain draws from the posterior using a Metropolis within Gibbs sampler of the following form:
+distributions are known and can be drawn from directly. That is, we can easily obtain random draws from $\text{Dir}(n_{p,0} + 1, n_{p,1} + 1, \dots, n_{p,113})$, $\text{Dir}(n_{p,Female} + 1, n_{p,Male} + 1)$, and $\text{Dir}(n_{p,Asian} + 1, \dots, n_{p,White} + 1)$. The posterior densities for the rest of the parameters are unknown and so we obtain draws from the posterior using a Metropolis within Gibbs sampler of the following form:
 \begin{enumerate}
   \item \label{draws2} Sample each $\sigma^2_p \sim [ \sigma^2_p | \boldsymbol{\phi}^\star_p, \mathbf{M}_p]$;
   \item \label{drawphi} Sample each $\phi^\star_p \sim [ \phi^\star_p | \sigma^2_p, \mathbf{M}_p ]$;
@@ -409,7 +410,7 @@ distributions are known and can be drawn from directly. The posterior densities 
     \{\sigma^2_p\}, \{\mathbf{M}_p\}, \sigma^2_\mu, \mathbf{M}_\mu, \boldsymbol{\beta} ]$; and
   \item \label{drawbeta} Sample $\boldsymbol{\beta} \sim [ \boldsymbol{\beta} | \boldsymbol{\mu}, 
     \sigma^2_\mu, \mathbf{M}_\mu ]$.
-\end{enumerate}
+\end{enumerate}}
 
 Note that for steps \ref{draws2}, \ref{drawsmu}, and \ref{drawbeta} we have the complete conditional distributions, but that \ref{drawphi} and \ref{drawmu} require a Metropolis-Hastings (MH) update. Using a sampler of this design, 10000 draws were taken from the posterior distributions for each of these parameters, after a burn-in of 10000. Monte Carlo standard error (MCSE) was calculated for each chain and provided evidence that all of them converged \citep{Flegal2015}. 
 
