@@ -385,9 +385,10 @@ f(\boldsymbol{\alpha}_p \mid \mathbf{Z}_p) &\propto \text{f}(\boldsymbol{\alpha}
 Stated explicitly, the posterior distribution of $\boldsymbol\alpha_p$ is a Dirichlet distribution with concentration parameters $(n_{p,0} + 1, n_{p,1} + 1, \dots, n_{p,113}+1)$.
 In a similar vein, we assume $$\boldsymbol\gamma_p = (\gamma_p(\text{female}), \gamma_p(\text{male}))' \sim \text{Dir}(\mathbf{1}_2)$$ and $$\boldsymbol\xi_p = (\xi_p(\text{Asian}), \dots, \xi_p(\text{White}))' \sim \text{Dir}(\mathbf{1}_4),$$ which, by the same argument, are also non-informative and conjugate priors.}
 
-%%% NOTE: STILL NEED TO DESCRIBE WHY IG PRIORS ARE APPROPRIATE %%%%
+
 \textcolor{red}{Our approach for the remaining unknown parameters is to assume vague priors (and conjugate 
-where possible). This is justified because there is sufficient data to learn these parameters without the need to rely heavily on prior information. We assume $\{\sigma^2_p\}$ and $\sigma^2_\mu$ are independent 
+where possible). %Is the following sentence sufficient to explain why we use vague priors?
+This is justified because there is sufficient data to learn these parameters without the need to rely heavily on prior information. For $\delta_p$, we assume $\delta_p \sim \mathcal{G}(0.001, 0.001)$, where $\mathcal{G}(a,b)$ denotes the gamma distribution with shape $a$ and rate $b$. Note that for $\delta_p$ the likelihood in \eqref{likelihood} is proportional to $$\exp\left(-\delta_p\right)\delta_p^{n_p},$$ the kernel of a Poisson distribution. Therefore, the gamma prior for $\delta_p$ is conjugate, producing a posterior distribution of $\mathcal{G}(n_p + 0.001, 1 + 0.001)$. We assume $\{\sigma^2_p\}$ and $\sigma^2_\mu$ are independent 
 $\mathcal{IG}\left(2.001, 1.001\right)$ 
 random variables where $\mathcal{IG}(a,b)$ denotes the inverse-gamma distribution with scale 
 $a$ and rate $b$, a well-known conjugate prior for normal variance parameters. The $\mathcal{IG}(2.001, 1.001)$ distribution has a variance of 1000, providing sufficient flexibility for the data to accurately dictate the variances. For the regression coefficients we assume that $\boldsymbol{\beta} \sim 
@@ -398,18 +399,18 @@ a vague prior for the variance parameters (the $\sigma^2$'s) allows each smoothn
 parameter to be fixed without loss generality or predictive power.}
 
 \subsection{Model Fitting}
-\textcolor{red}{We fit this model within a Bayesian framework. Because the priors
+\textcolor{red}{We fit this model within a Bayesian framework. For each health outcome $p = 1, \dots, P$, randomly generate draws for $\delta_p$ from the known posterior, $\mathcal{G}(n_p + 0.001, 1.001)$. Similarly, because the priors
 for $\boldsymbol{\alpha}_p$, $\boldsymbol{\gamma}_p$, and $\boldsymbol{\xi}_p$ are all conjugate, their posterior
-distributions are known and can be drawn from directly. That is, we can easily obtain random draws from $\text{Dir}(n_{p,0} + 1, n_{p,1} + 1, \dots, n_{p,113})$, $\text{Dir}(n_{p,Female} + 1, n_{p,Male} + 1)$, and $\text{Dir}(n_{p,Asian} + 1, \dots, n_{p,White} + 1)$. The posterior densities for the rest of the parameters are unknown and so we obtain draws from the posterior using a Metropolis within Gibbs sampler of the following form:
+distributions are known and can be drawn from directly. That is, we can easily obtain random draws from $\text{Dir}(n_{p,0} + 1, n_{p,1} + 1, \dots, n_{p,113})$, $\text{Dir}(n_{p,Female} + 1, n_{p,Male} + 1)$, and $\text{Dir}(n_{p,Asian} + 1, \dots, n_{p,White} + 1)$, where as before $n_{p,0}$ denotes the number of people who experienced health outcome $p$ at age $0$, $n_{p,Female}$ indicates the number of females who experienced health outcome $p$, and so on.}
+
+ \textcolor{red}{The posterior densities for the rest of the parameters are unknown and so we obtain draws from the posterior using a Metropolis within Gibbs sampler of the following form:
 \begin{enumerate}
-  \item \label{draws2} Sample each $\sigma^2_p \sim [ \sigma^2_p | \boldsymbol{\phi}^\star_p, \mathbf{M}_p]$;
-  \item \label{drawphi} Sample each $\phi^\star_p \sim [ \phi^\star_p | \sigma^2_p, \mathbf{M}_p ]$;
-  \item \label{drawsmu} Sample $\sigma^2_\mu \sim [ \sigma^2_\mu | \boldsymbol{\mu}, \boldsymbol{\beta}, 
-    \mathbf{M}_\mu ]$;
+  \item \label{draws2} For $p = 1, \dots, P$, sample $\sigma^2_p \sim \mathcal{IG}(2.001 + \frac{K}{2}, 1.001 + \frac{1}{2}\boldsymbol\phi^{\star\prime}\mathbf{M}_p^{-1}\boldsymbol\phi^\star)$;%[ \sigma^2_p | \boldsymbol{\phi}^\star_p, \mathbf{M}_p]$;
+  \item \label{drawphi} For $p = 1, \dots, P$, sample $\boldsymbol\phi^\star_p \sim [ \boldsymbol\phi^\star_p | \sigma^2_p, \mathbf{M}_p ]$;
+  \item \label{drawsmu} Sample $\sigma^2_\mu \sim \mathcal{IG}(2.001 + \frac{K}{2}, 1.001 + \frac{1}{2}(\boldsymbol\mu - \mathbf{X}\boldsymbol\beta)^\prime\mathbf{M}^{-1}_\mu(\boldsymbol\mu - \mathbf{X}\boldsymbol\beta));$%[ \sigma^2_\mu | \boldsymbol{\mu}, \boldsymbol{\beta}, \mathbf{M}_\mu ]$;
   \item \label{drawmu} Sample $\boldsymbol{\mu} \sim [ \boldsymbol{\mu} | \{\boldsymbol{\phi}^\star_p\}, 
     \{\sigma^2_p\}, \{\mathbf{M}_p\}, \sigma^2_\mu, \mathbf{M}_\mu, \boldsymbol{\beta} ]$; and
-  \item \label{drawbeta} Sample $\boldsymbol{\beta} \sim [ \boldsymbol{\beta} | \boldsymbol{\mu}, 
-    \sigma^2_\mu, \mathbf{M}_\mu ]$.
+  \item \label{drawbeta} Sample $\boldsymbol{\beta} \sim \mathcal{N}(\sigma_\mu^{-2}\Sigma^{\star}\mathbf{X}^\prime\mathbf{M}_\mu^{-1}\boldsymbol\mu, \Sigma^\star)$, where $\Sigma^\star = \left[\frac{1}{50}I_Q + \frac{1}{\sigma^2_\mu}\mathbf{X}^\prime \mathbf{M}_\mu^{-1}\mathbf{X}\right]^{-1}$.%[ \boldsymbol{\beta} | \boldsymbol{\mu}, \sigma^2_\mu, \mathbf{M}_\mu ]$.
 \end{enumerate}}
 
 Note that for steps \ref{draws2}, \ref{drawsmu}, and \ref{drawbeta} we have the complete conditional distributions, but that \ref{drawphi} and \ref{drawmu} require a Metropolis-Hastings (MH) update. Using a sampler of this design, 10000 draws were taken from the posterior distributions for each of these parameters, after a burn-in of 10000. Monte Carlo standard error (MCSE) was calculated for each chain and provided evidence that all of them converged \citep{Flegal2015}. 
