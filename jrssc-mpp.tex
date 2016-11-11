@@ -407,15 +407,30 @@ distributions are known and can be drawn from directly. That is, for $p = 1, \do
 
  \textcolor{red}{The posterior densities for the rest of the parameters are unknown and so we obtain draws from the posterior using a Metropolis within Gibbs sampler of the following form:
 \begin{enumerate}
-  \item \label{draws2} For $p = 1, \dots, P$, sample $\sigma^2_p \sim \mathcal{IG}(2.001 + \frac{K}{2}, 1.001 + \frac{1}{2}\boldsymbol\phi^{\star\prime}\mathbf{M}_p^{-1}\boldsymbol\phi^\star)$;%[ \sigma^2_p | \boldsymbol{\phi}^\star_p, \mathbf{M}_p]$;
-  \item \label{drawphi} For $p = 1, \dots, P$, sample $\boldsymbol\phi^\star_p \sim [ \boldsymbol\phi^\star_p | \sigma^2_p, \mathbf{M}_p ]$;
-  \item \label{drawsmu} Sample $\sigma^2_\mu \sim \mathcal{IG}(2.001 + \frac{K}{2}, 1.001 + \frac{1}{2}(\boldsymbol\mu - \mathbf{X}\boldsymbol\beta)^\prime\mathbf{M}^{-1}_\mu(\boldsymbol\mu - \mathbf{X}\boldsymbol\beta));$%[ \sigma^2_\mu | \boldsymbol{\mu}, \boldsymbol{\beta}, \mathbf{M}_\mu ]$;
-  \item \label{drawmu} Sample $\boldsymbol{\mu} \sim [ \boldsymbol{\mu} | \{\boldsymbol{\phi}^\star_p\}, 
-    \{\sigma^2_p\}, \{\mathbf{M}_p\}, \sigma^2_\mu, \mathbf{M}_\mu, \boldsymbol{\beta} ]$; and
-  \item \label{drawbeta} Sample $\boldsymbol{\beta} \sim \mathcal{N}(\sigma_\mu^{-2}\Sigma^{\star}\mathbf{X}^\prime\mathbf{M}_\mu^{-1}\boldsymbol\mu, \Sigma^\star)$, where $\Sigma^\star = \left[\frac{1}{50}I_Q + \frac{1}{\sigma^2_\mu}\mathbf{X}^\prime \mathbf{M}_\mu^{-1}\mathbf{X}\right]^{-1}$.%[ \boldsymbol{\beta} | \boldsymbol{\mu}, \sigma^2_\mu, \mathbf{M}_\mu ]$.
+  \item \label{draws2} For $p = 1, \dots, P$, sample $\sigma^2_p \sim \left[ \sigma^2_p | \boldsymbol{\phi}^\star_p, \mathbf{M}_p\right]$;
+  \item \label{drawphi} For $p = 1, \dots, P$, sample $\boldsymbol\phi^\star_p \sim \left[ \boldsymbol\phi^\star_p | \sigma^2_p, \mathbf{M}_p \right]$;
+  \item \label{drawsmu} Sample $\sigma^2_\mu \sim \left[ \sigma^2_\mu | \boldsymbol{\mu}, \boldsymbol{\beta}, \mathbf{M}_\mu \right]$;
+  \item \label{drawmu} Sample $\boldsymbol{\mu} \sim \left[ \boldsymbol{\mu} | \{\boldsymbol{\phi}^\star_p\}, 
+    \{\sigma^2_p\}, \{\mathbf{M}_p\}, \sigma^2_\mu, \mathbf{M}_\mu, \boldsymbol{\beta} \right]$; and
+  \item \label{drawbeta} Sample $\boldsymbol{\beta} \sim \left[ \boldsymbol{\beta} | \boldsymbol{\mu}, \sigma^2_\mu, \mathbf{M}_\mu \right]$.
 \end{enumerate}}
 
-Note that for steps \ref{draws2}, \ref{drawsmu}, and \ref{drawbeta} we have the complete conditional distributions, but that \ref{drawphi} and \ref{drawmu} require a Metropolis-Hastings (MH) update. Using a sampler of this design, 10000 draws were taken from the posterior distributions for each of these parameters, after a burn-in of 10000. In order to assess convergence, we used Monte Carlo standard error (MCSE). MCSE provides evidence of convergence by Monte Carlo standard error (MCSE) was calculated for each chain and provided evidence that all of them converged \citep{Flegal2015}. 
+\textcolor{red}{
+We use the notation $\left[\theta | \psi_1, \dots, \psi_k \right]$ to represent the complete conditional for the parameter $\theta$ dependent on parameters $\psi_1, \dots, \psi_k$. Note that for steps \ref{draws2}, \ref{drawsmu}, and \ref{drawbeta} the complete conditional distributions are}
+\begin{equation}
+\sigma^2_p \sim \mathcal{IG}\left(2.001 + \frac{K}{2}, 1.001 + \frac{1}{2}\boldsymbol\phi_p^{\star\prime}\mathbf{M}_p^{-1}\boldsymbol\phi_p^\star\right),
+\end{equation}
+\begin{equation}
+\sigma^2_\mu \sim \mathcal{IG}\left(2.001 + \frac{K}{2}, 1.001 + \frac{1}{2}(\boldsymbol\mu - \mathbf{X}\boldsymbol\beta)^\prime\mathbf{M}^{-1}_\mu(\boldsymbol\mu - \mathbf{X}\boldsymbol\beta)\right), \text{ and }
+\end{equation}
+\begin{equation}
+\boldsymbol{\beta} \sim \mathcal{N}\left(\sigma_\mu^{-2}\Sigma^{\star}\mathbf{X}^\prime\mathbf{M}_\mu^{-1}\boldsymbol\mu, \Sigma^\star)\right), 
+\end{equation}
+where $M_p$ and $M_\mu$ are defined as in \eqref{phiprior} and \eqref{mu} and where $\Sigma^\star = \left[\frac{1}{50}I_Q + \frac{1}{\sigma^2_\mu}\mathbf{X}^\prime \mathbf{M}_\mu^{-1}\mathbf{X}\right]^{-1}$. 
+\textcolor{red}{
+Because these belong to known families they can be drawn from directly using a Gibbs update, but the complete conditional distributions in steps \ref{drawphi} and \ref{drawmu} are not known and require a Metropolis-Hastings (MH) update. Using a sampler of this design, 10000 draws were taken from the posterior distributions for each of these parameters, after a burn-in of 10000.\footnote{R code used to implement this algorithm is provided in the supplementary materials.m} In order to assess convergence, we examined traceplots for each of the parameters and used Monte Carlo standard error (MCSE). \cite{Jones2006} calculate MCSE by dividing the chains into batches and using each batch mean to calculate variance between batches. Small MCSE values occur only when the variance between batches is low (i.e., each batch is approximately equal), thereby providing evidence of convergence. We calculated MCSE using the \texttt{mcmcse} package in R \citep{Flegal2015}, and the largest MCSE value for all of our parameters was XXXXX. Based on these MCSE values and visual inspection of the traceplots, we are satisfied that convergence was attained.}
+
+%They essentially argue that having a low MCSE can only happen for converged chains.  The reason they can say this is because they use the batch means estimates to get at the MCSE.  By batch means, they break the whole chain into pieces (batches) then calculate the variance between batches.  The argument is that the variance between batches can only be small when each batch is approximately equal; hence the algorithm is "converged".
 
 
 \section{Results}\label{results}
@@ -602,7 +617,7 @@ Estimation of the effects of these demographic variables allows us to develop a 
     \includegraphics[width=1.0\textwidth]{./imgs/delta_mortality.pdf}
   \end{minipage}
   \caption{Posterior density plots for $\delta_{911}$ and $\delta_{Mort}$.}
-  \label{kde}
+  \label{fig:delta_kde}
 \end{figure}
 
 \begin{table}

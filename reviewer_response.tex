@@ -1,0 +1,26 @@
+\documentclass{article}
+\usepackage[letterpaper,margin=1in]{geometry}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsbsy}
+\usepackage{epsfig}
+\usepackage{color}
+\usepackage{url}
+\usepackage{dsfont}
+\usepackage{bm}
+\usepackage{csquotes}
+
+\begin{document}
+\section{Response to Comments From Reviewer 1}
+\subsection{I really feel given the nature of this paper (it is not the definitive guide to heat and health in Houston) that it needs to be fully capable of reproducibility.   I therefore don't feel the part of the algorithm set out in section 2.4 is sufficient.   For example I had to read to find details for $\boldsymbol{\alpha}_p$ etc., some of the other comments (the posterior is fully known) were a little glib.   I think the entire sampler could be set out in the text, but if not an appendix could be used.   Links to code would also be helpful (I appreciate there are confidentiality issues with some of the data).}
+
+Valid point. We rearranged the paper to put all of the information relevant to the algorithm in 2.4 together in the same section, making it easier to find details about how the model was fit. We also provided additional description to clarify what was meant by our comments such as ``the posterior is fully known.''
+
+\subsection{I don't think the comments on convergence are adequate.   On page 13 line 10; how does MCSE alone provide evidence of convergence?   I think more is needed.}
+We have attached traceplots to this document and can include them in the supplementary materials for the paper if desired. Additionally, we added further detail about how MCSE provides evidence of convergence on page 14 with the following statement:
+
+\begin{displayquote}
+In order to assess convergence, we examined traceplots for each of the parameters and used Monte Carlo standard error (MCSE). Jones et. al. (2006) calculate MCSE by dividing the chains into batches and using each batch mean to calculate variance between batches. Small MCSE values occur only when the variance between batches is low (i.e., each batch is approximately equal), thereby providing evidence of convergence.
+\end{displayquote}
+
+\end{document}
