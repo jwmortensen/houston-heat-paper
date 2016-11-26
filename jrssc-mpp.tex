@@ -11,6 +11,7 @@
 \usepackage{dsfont}
 \usepackage{bm}
 \usepackage{multirow}
+\usepackage[linesnumbered,lined,ruled]{algorithm2e}
 
 \newcommand*\rot{\rotatebox{90}}
 
@@ -351,11 +352,14 @@ the combination of information from many different sources of health data into
 a single measure of the overall relative risk of heat on 
 health rather than just the impact of heat on one indicator. In spite of a common mean, 
 in \eqref{phiprior} we allow a separate variance parameter for each health outcome 
-($\sigma^2_p$). We make this assumption primarily from the kernel density estimates 
+($\sigma^2_p$). We make this decisions based primarily on the kernel density estimates 
 in Figure \ref{kde} which 
 show that the density of the 911 calls is more peaked (i.e. larger variance of density values).
 
-An implicit assumption with \eqref{phiprior} is the independence assumption among the log relative risks for each health outcome given the overall, ``cumulative'' log relative risk surface $\boldsymbol{\mu}$. For the application considered here this assumption is likely to, approximately, hold because the time frame for the 911 call data is 2006-2010 while the time frame for the mortality data is 1999-2006 (a minimal overlap); however, in other applications independence may not hold. In such cases, a multivariate spatial model (see \cite{Genton2015} for a discussion) could be used in place of \eqref{phiprior}. We note the possible benefit of modeling dependence between the log relative risks but we do not explore this option here.
+\textcolor{red}{The primary assumption we make in \eqref{phiprior} is that the relative risk surfaces for each health outcome share a common, underlying risk surface that is constant with respect to time. Naturally, the assumption would be violated if there is temporal variability between the relative risk surface in 1999-2006 (the time window for the mortality data) and 2006-2010 (the time window for the 911 call data). Unfortunately, given the data available to us, our assumption of a time-invariant relative risk surface is not able to be evaluated. That is, we would need information on the relative risk of mortality between 2006-2010 to investigate any inherent differences in the surface between 1999-2006 and 2006-2010 (which we don't have). Likewise, we would need 911 call data for the years 1999-2006 to assess any temporal differences in the risk of a 911 call (which we also don't have). While the possibility of a time-varying risk surface would be interesting from an epidemiological perspective, we leave this for future work.}
+
+\textcolor{red}{An additional implicit assumption with \eqref{phiprior} is the independence assumption among the log relative risks for each health outcome given the overall, ``cumulative'' log relative risk surface $\boldsymbol{\mu}$. For the application considered here this assumption is likely to, approximately, hold because the time frame for the 911 call data is 2006-2010 while the time frame for the mortality data is 1999-2006 (a minimal overlap); however, in other applications independence may not hold. In such cases, a multivariate spatial model (see \cite{Genton2015} for a discussion) could be used in place of \eqref{phiprior}. We note the possible benefit of modeling dependence between the log relative risks but we do not explore this option here.}
+
 
 Additionally, at the process layer of the model we assume 
 \begin{align}
@@ -369,7 +373,7 @@ decay $\psi_\mu$. The regression in \eqref{mu} allows us to assess if covariates
 poverty, age, or urban temperature affect the height of the global intensity surface 
 through inference on the parameters $\boldsymbol{\beta}$.
 
-\subsection{Hyperprior Layer}
+\subsection{Hyperprior Layer}\label{sec:hyperprior}
 \textcolor{red}{At the hyperior prior layer of the model, we outline our prior assumptions for the model
 parameters in Sections \ref{likelayer} and \ref{process}. Because $\boldsymbol{\alpha}_p = 
 (\alpha_p(0),\dots,\alpha_p(113))'$ are probabilities where $\sum_a \alpha_p(a) = 1$, 
@@ -401,22 +405,32 @@ a vague prior for the variance parameters (the $\sigma^2$'s) allows each smoothn
 parameter to be fixed without loss generality or predictive power.}
 
 \subsection{Model Fitting}
-\textcolor{red}{We fit this model within a Bayesian framework. For each health outcome $p = 1, \dots, P$, randomly generate draws for $\delta_p$ from the known posterior, $\mathcal{G}(n_p + 0.001, 1.001)$. Similarly, because the priors
-for $\boldsymbol{\alpha}_p$, $\boldsymbol{\gamma}_p$, and $\boldsymbol{\xi}_p$ are all conjugate, their posterior
-distributions are known and can be drawn from directly. That is, for $p = 1, \dots, P$ we can easily obtain random draws from $\text{Dir}(n_{p,0} + 1, n_{p,1} + 1, \dots, n_{p,113})$, $\text{Dir}(n_{p,Female} + 1, n_{p,Male} + 1)$, and $\text{Dir}(n_{p,Asian} + 1, \dots, n_{p,White} + 1)$, where as before $n_{p,0}$ denotes the number of people who experienced health outcome $p$ at age $0$, $n_{p,Female}$ indicates the number of females who experienced health outcome $p$, and so on.}
+\begin{algorithm}
+  Let $N$ be the number of MCMC draws, large enough that convergence is attained.
+  \BlankLine
+  \For{$p$ in $1:P$}{
+  Sample $N$ draws from $\delta_{p} \sim \mathcal{G}(n_p + 0.001, 1.001)$\;
+  Sample $N$ draws from $\boldsymbol\alpha_p \sim \text{Dir}\left(n_{p,0}+1, n_{p,1}+1, \dots, n_{p,113} + 1\right)$\;
+  Sample $N$ draws from $\boldsymbol\gamma_p \sim \text{Dir}\left(n_{p,\text{Female}} + 1, n_{p,\text{Male}} + 1\right)$\;
+  Sample $N$ draws from $\boldsymbol\xi_p \sim \text{Dir}\left(n_{p,\text{Asian}} + 1, \dots, n_{p,\text{White}}\right)$\;
+  }
+  \For{$i$ in $1:N$}{
+    \For{$p$ in $1:P$} {
+      Sample $\sigma^2_p \sim \left[ \sigma^2_p | \boldsymbol{\phi}^\star_p, \mathbf{M}_p\right]$\label{draws2}\;
+      Sample $\boldsymbol\phi^\star_p \sim \left[ \boldsymbol\phi^\star_p | \sigma^2_p, \mathbf{M}_p \right]$\label{drawphi}\;
+    }
+    Sample $\sigma^2_\mu \sim \left[ \sigma^2_\mu | \boldsymbol{\mu}, \boldsymbol{\beta}, \mathbf{M}_\mu \right]$\label{drawsmu}\;
+    Sample $\boldsymbol{\mu} \sim \left[ \boldsymbol{\mu} | \{\boldsymbol{\phi}^\star_p\}, 
+    \{\sigma^2_p\}, \{\mathbf{M}_p\}, \sigma^2_\mu, \mathbf{M}_\mu, \boldsymbol{\beta} \right]$\label{drawmu}\;
+    Sample $\boldsymbol{\beta} \sim \left[ \boldsymbol{\beta} | \boldsymbol{\mu}, \sigma^2_\mu, \mathbf{M}_\mu \right]$\label{drawbeta}\;
+  }
+  \caption{Model fitting algorithm. \label{algo:model_fit}}
+  
+  
+\end{algorithm}
+\textcolor{red}{We fit this model within a Bayesian framework, using the Markov Chain Monte Carlo (MCMC) algorithm outlined in Algorithm \ref{algo:model_fit}. Notice that because the parameters on lines 2-7 all have conjugate priors (as described in Section \ref{sec:hyperprior}), their posterior densities are completely known and all $N$ draws can be taken simultaneously. Recall that $n_{p,0}$ denotes the number of people who experienced health outcome $p$ at age $0$, $n_{p,Female}$ indicates the number of females who experienced health outcome $p$, and so on. }
 
- \textcolor{red}{The posterior densities for the rest of the parameters are unknown and so we obtain draws from the posterior using a Metropolis within Gibbs sampler of the following form:
-\begin{enumerate}
-  \item \label{draws2} For $p = 1, \dots, P$, sample $\sigma^2_p \sim \left[ \sigma^2_p | \boldsymbol{\phi}^\star_p, \mathbf{M}_p\right]$;
-  \item \label{drawphi} For $p = 1, \dots, P$, sample $\boldsymbol\phi^\star_p \sim \left[ \boldsymbol\phi^\star_p | \sigma^2_p, \mathbf{M}_p \right]$;
-  \item \label{drawsmu} Sample $\sigma^2_\mu \sim \left[ \sigma^2_\mu | \boldsymbol{\mu}, \boldsymbol{\beta}, \mathbf{M}_\mu \right]$;
-  \item \label{drawmu} Sample $\boldsymbol{\mu} \sim \left[ \boldsymbol{\mu} | \{\boldsymbol{\phi}^\star_p\}, 
-    \{\sigma^2_p\}, \{\mathbf{M}_p\}, \sigma^2_\mu, \mathbf{M}_\mu, \boldsymbol{\beta} \right]$; and
-  \item \label{drawbeta} Sample $\boldsymbol{\beta} \sim \left[ \boldsymbol{\beta} | \boldsymbol{\mu}, \sigma^2_\mu, \mathbf{M}_\mu \right]$.
-\end{enumerate}}
-
-\textcolor{red}{
-We use the notation $\left[\theta | \psi_1, \dots, \psi_k \right]$ to represent the complete conditional for the parameter $\theta$ dependent on parameters $\psi_1, \dots, \psi_k$. Note that for steps \ref{draws2}, \ref{drawsmu}, and \ref{drawbeta} the complete conditional distributions are}
+ \textcolor{red}{The complete posterior densities for the remaining parameters are unknown and so we obtain draws from the posterior using the Metropolis within Gibbs sampler outlined on lines 8-16 of Algorithm \ref{algo:model_fit}. We use the notation $\left[\theta | \psi_1, \dots, \psi_k \right]$ to represent the complete conditional for the parameter $\theta$ dependent on parameters $\psi_1, \dots, \psi_k$. Note that for the parameter updates on lines \ref{draws2}, \ref{drawsmu}, and \ref{drawbeta} the complete conditional distributions are}
 \begin{equation}
 \sigma^2_p \sim \mathcal{IG}\left(2.001 + \frac{K}{2}, 1.001 + \frac{1}{2}\boldsymbol\phi_p^{\star\prime}\mathbf{M}_p^{-1}\boldsymbol\phi_p^\star\right),
 \end{equation}
@@ -428,7 +442,9 @@ We use the notation $\left[\theta | \psi_1, \dots, \psi_k \right]$ to represent 
 \end{equation}
 where $M_p$ and $M_\mu$ are defined as in \eqref{phiprior} and \eqref{mu} and where $\Sigma^\star = \left[\frac{1}{50}I_Q + \frac{1}{\sigma^2_\mu}\mathbf{X}^\prime \mathbf{M}_\mu^{-1}\mathbf{X}\right]^{-1}$. 
 \textcolor{red}{
-Because these belong to known families they can be drawn from directly using a Gibbs update, but the complete conditional distributions in steps \ref{drawphi} and \ref{drawmu} are not known and require a Metropolis-Hastings (MH) update. Using a sampler of this design, 10000 draws were taken from the posterior distributions for each of these parameters, after a burn-in of 10000.\footnote{R code used to implement this algorithm is provided in the supplementary materials.m} In order to assess convergence, we examined traceplots for each of the parameters and used Monte Carlo standard error (MCSE). \cite{Jones2006} calculate MCSE by dividing the chains into batches and using each batch mean to calculate variance between batches. Small MCSE values occur only when the variance between batches is low (i.e., each batch is approximately equal), thereby providing evidence of convergence. We calculated MCSE using the \texttt{mcmcse} package in R \citep{Flegal2015}, and the largest MCSE value for all of our parameters was XXXXX. Based on these MCSE values and visual inspection of the traceplots, we are satisfied that convergence was attained.}
+Because these belong to known families they can be drawn from directly using a Gibbs update, but the complete conditional distributions in steps \ref{drawphi} and \ref{drawmu} are not known and require a Metropolis-Hastings (MH) update.}
+
+\textcolor{red}{Using a sampler of this design, 10000 draws were taken from the posterior distributions for each of these parameters, after a burn-in of 10000.\footnote{R code used to implement this algorithm is provided in the supplementary materials.} In order to assess convergence, we examined traceplots for each of the parameters and used Monte Carlo standard error (MCSE). \cite{Jones2006} calculate MCSE by dividing the chains into batches and using each batch mean to calculate variance between batches. Small MCSE values occur only when the variance between batches is low (i.e., each batch is approximately equal), thereby providing evidence of convergence. We calculated MCSE using the \texttt{mcmcse} package in R \citep{Flegal2015}, and the largest MCSE value for all of our parameters was XXXXX. Based on these MCSE values and visual inspection of the traceplots, we are satisfied that convergence was attained.}
 
 %They essentially argue that having a low MCSE can only happen for converged chains.  The reason they can say this is because they use the batch means estimates to get at the MCSE.  By batch means, they break the whole chain into pieces (batches) then calculate the variance between batches.  The argument is that the variance between batches can only be small when each batch is approximately equal; hence the algorithm is "converged".
 
@@ -468,7 +484,7 @@ are all very close, indicating little difference in model fit between the differ
 \hline \\[-1.8ex]  
 Temperature Measurement & DIC \\
 \hline \\[-1.8ex]  
-HI Max & $220991$ \\ 
+HI Max & $220474$ \\ 
 HI Min & $221016$ \\ 
 T2 Max & $220998$ \\ 
 T2 Min & $220999$ \\ 
@@ -491,16 +507,16 @@ SWBG Min & $221021$ \\
   & \rot{\% over 65} & \rot{\% under 5} & \rot{\% Black} & \rot{\% Hispanic} & \rot{\% w/o AC} & \rot{\% disabled} & \rot{\% living alone} & \rot{\% in poverty} & \rot{Interactions} & DIC \\\hline
   Model 01 &   &   &   &   &   &   &   &   &   & 12345 \\
   Model 02 & X & X &   &   &   &   &   &   &   & 12345 \\
-  Model 03 &   &   & X & X &   &   &   &   &   & 12345 \\
-  Model 04 &   &   &   &   & X & X & X & X &   & 12345 \\
-  Model 05 & X & X & X & X &   &   &   &   &   & 12345 \\
-  Model 06 & X & X &   &   & X & X & X & X &   & 12345 \\
-  Model 07 &   &   & X & X & X & X & X & X &   & 12345 \\
-  Model 08 & X & X & X & X & X & X & X & X &   & 12345 \\
-  Model 09 & X & X &   &   &   &   &   &   & X & 12345 \\
-  Model 10 &   &   & X & X &   &   &   &   & X & 12345 \\
-  Model 11 &   &   &   &   & X & X & X & X & X & 12345 \\
-  Model 12 & X & X & X & X &   &   &   &   & X & 12345 \\
+  Model 03 &   &   & X & X &   &   &   &   &   & 220523 \\
+  Model 04 &   &   &   &   & X & X & X & X &   & 220482 \\
+  Model 05 & X & X & X & X &   &   &   &   &   & 220526 \\
+  Model 06 & X & X &   &   & X & X & X & X &   & 220512 \\
+  Model 07 &   &   & X & X & X & X & X & X &   & 220497 \\
+  Model 08 & X & X & X & X & X & X & X & X &   & 220498 \\
+  Model 09 & X & X &   &   &   &   &   &   & X & 220529 \\
+  Model 10 &   &   & X & X &   &   &   &   & X & 220455 \\
+  Model 11 &   &   &   &   & X & X & X & X & X & 220493 \\
+  Model 12 & X & X & X & X &   &   &   &   & X & 220522 \\
   Model 13 & X & X &   &   & X & X & X & X & X & 12345 \\
   Model 14 &   &   & X & X & X & X & X & X & X & 12345 \\
   Model 15 & X & X & X & X & X & X & X & X & X & 12345 \\
@@ -616,7 +632,7 @@ Estimation of the effects of these demographic variables allows us to develop a 
     \centering
     \includegraphics[width=1.0\textwidth]{./imgs/delta_mortality.pdf}
   \end{minipage}
-  \caption{Posterior density plots for $\delta_{911}$ and $\delta_{Mort}$.}
+  \caption{Posterior density plots for $\delta_{911}$ and $\delta_{\text{Mort}}$. The posterior mean for $\delta_{911}$ is 1387 and the posterior mean for $\delta_{\text{Mort}}$ is 15228}
   \label{fig:delta_kde}
 \end{figure}
 
