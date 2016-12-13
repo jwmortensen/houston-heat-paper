@@ -36,7 +36,7 @@ United States.}
 
 \begin{abstract}
 Extreme heat, or persistently high temperatures in the form of heat waves,
-adversely impact human health. To study such effects, risk maps are a common
+adversely impacts human health. To study such effects, risk maps are a common
 epidemiological tool used to identify regions and populations that are
 more susceptible to these negative outcomes; however, the negative health 
 effects of high temperatures are manifested differently among
@@ -361,7 +361,7 @@ show that the density of the 911 calls is more peaked (i.e. larger variance of d
 \textcolor{red}{An additional implicit assumption with \eqref{phiprior} is the independence assumption among the log relative risks for each health outcome given the overall, ``cumulative'' log relative risk surface $\boldsymbol{\mu}$. For the application considered here this assumption is likely to, approximately, hold because the time frame for the 911 call data is 2006-2010 while the time frame for the mortality data is 1999-2006 (a minimal overlap); however, in other applications independence may not hold. In such cases, a multivariate spatial model (see \cite{Genton2015} for a discussion) could be used in place of \eqref{phiprior}. We note the possible benefit of modeling dependence between the log relative risks but we do not explore this option here.}
 
 
-Additionally, at the process layer of the model we assume 
+At the process layer of the model we also assume 
 \begin{align}
 \boldsymbol{\mu} \sim \mathcal{N}(\mathbf{X}\boldsymbol{\beta},\sigma^2_\mu\mathbf{M}_\mu)
 \label{mu}
@@ -398,7 +398,7 @@ This is justified because there is sufficient data to learn these parameters wit
 $\mathcal{IG}\left(2.001, 1.001\right)$ 
 random variables where $\mathcal{IG}(a,b)$ denotes the inverse-gamma distribution with scale 
 $a$ and rate $b$, a well-known conjugate prior for normal variance parameters. The $\mathcal{IG}(2.001, 1.001)$ distribution has a variance of 1000, providing sufficient flexibility for the data to accurately dictate the variances. For the regression coefficients we assume that $\boldsymbol{\beta} \sim 
-\mathcal{N}(0, 50\mathbf{I}_{Q})$, leading to a Gaussian complete conditional for $\boldsymbol{\beta}$. 
+\mathcal{N}(0, 50\mathbf{I}_{Q})$, which leads to a Gaussian complete conditional for $\boldsymbol{\beta}$. 
 Conjugate prior distributions for each spatial smoothness parameter (the $\nu$'s) and decay 
 parameter (the $\psi$'s) are not available; however, following the results of \cite{Zhang2004}, 
 a vague prior for the variance parameters (the $\sigma^2$'s) allows each smoothness and decay 
@@ -425,9 +425,8 @@ parameter to be fixed without loss generality or predictive power.}
     Sample $\boldsymbol{\beta} \sim \left[ \boldsymbol{\beta} | \boldsymbol{\mu}, \sigma^2_\mu, \mathbf{M}_\mu \right]$\label{drawbeta}\;
   }
   \caption{Model fitting algorithm. \label{algo:model_fit}}
-  
-  
 \end{algorithm}
+
 \textcolor{red}{We fit this model within a Bayesian framework, using the Markov Chain Monte Carlo (MCMC) algorithm outlined in Algorithm \ref{algo:model_fit}. Notice that because the parameters on lines 2-7 all have conjugate priors (as described in Section \ref{sec:hyperprior}), their posterior densities are completely known and all $N$ draws can be taken simultaneously. Recall that $n_{p,0}$ denotes the number of people who experienced health outcome $p$ at age $0$, $n_{p,Female}$ indicates the number of females who experienced health outcome $p$, and so on. }
 
  \textcolor{red}{The complete posterior densities for the remaining parameters are unknown and so we obtain draws from the posterior using the Metropolis within Gibbs sampler outlined on lines 8-16 of Algorithm \ref{algo:model_fit}. We use the notation $\left[\theta | \psi_1, \dots, \psi_k \right]$ to represent the complete conditional for the parameter $\theta$ dependent on parameters $\psi_1, \dots, \psi_k$. Note that for the parameter updates on lines \ref{draws2}, \ref{drawsmu}, and \ref{drawbeta} the complete conditional distributions are}
@@ -444,7 +443,7 @@ where $M_p$ and $M_\mu$ are defined as in \eqref{phiprior} and \eqref{mu} and wh
 \textcolor{red}{
 Because these belong to known families they can be drawn from directly using a Gibbs update, but the complete conditional distributions in steps \ref{drawphi} and \ref{drawmu} are not known and require a Metropolis-Hastings (MH) update.}
 
-\textcolor{red}{Using a sampler of this design, 10000 draws were taken from the posterior distributions for each of these parameters, after a burn-in of 10000.\footnote{R code used to implement this algorithm is provided in the supplementary materials.} In order to assess convergence, we examined traceplots for each of the parameters and used Monte Carlo standard error (MCSE). \cite{Jones2006} calculate MCSE by dividing the chains into batches and using each batch mean to calculate variance between batches. Small MCSE values occur only when the variance between batches is low (i.e., each batch is approximately equal), thereby providing evidence of convergence. We calculated MCSE using the \texttt{mcmcse} package in R \citep{Flegal2015}, and the largest MCSE value for all of our parameters was XXXXX. Based on these MCSE values and visual inspection of the traceplots, we are satisfied that convergence was attained.}
+\textcolor{red}{Using a sampler of this design, \textcolor{blue}{10000} draws were taken from the posterior distributions for each of these parameters, after a burn-in of \textcolor{blue}{10000.}\footnote{R code used to implement this algorithm is provided in the supplementary materials.} In order to assess convergence, we examined traceplots for each of the parameters and used Monte Carlo standard error (MCSE). \cite{Jones2006} calculate MCSE by dividing the chains into batches and using each batch mean to calculate variance between batches. Small MCSE values occur only when the variance between batches is low (i.e., each batch is approximately equal), thereby providing evidence of convergence. We calculated MCSE using the \texttt{mcmcse} package in R \citep{Flegal2015}, and the largest MCSE value for all of our parameters was \textcolor{blue}{XXXXX.} Based on these MCSE values and visual inspection of the traceplots, we are satisfied that convergence was attained.}
 
 %They essentially argue that having a low MCSE can only happen for converged chains.  The reason they can say this is because they use the batch means estimates to get at the MCSE.  By batch means, they break the whole chain into pieces (batches) then calculate the variance between batches.  The argument is that the variance between batches can only be small when each batch is approximately equal; hence the algorithm is "converged".
 
@@ -466,16 +465,16 @@ these variables were averaged across the months May through September of
 1999 -- 2010 (the time window for all observed health outcomes). 
 
 We fit the model in Section \ref{model} using each of these temperature variables (one at a time) and then calculated the deviance information criterion (DIC) \citep{Spiegelhalter2002} as a measure of model fit. 
-Table \ref{DIC} 
-shows that the model produced the lowest DIC value when fit with max HI so the numerical estimates and risk maps shown in this chapter are from the model fit with this temperature measurement. Figure \ref{fig:temp} displays the average maximum HI values associated with each grid cell and shows a clear spatial distribution, with higher temperatures concentrated near the city center. Note that the DIC values in Table \ref{DIC} 
-are all very close, indicating little difference in model fit between the different variables.  This is, perhaps, due to the fact that the covariates enter our model at the mean intensity surface layer (in the regression for $\boldsymbol{\mu}$) at which point it is difficult to distinguish between the different heat variables. That is, because $\boldsymbol{\mu}$ captures both the 911 calls and mortalities, it is possible that any of the measured heat variables explain the combined impact of heat on ``health'' whereas specific heat variables better explain specific health outcomes.
+Table \ref{DIC} shows that the model produced the lowest DIC value when fit with min HI so the numerical estimates and risk maps shown in this chapter are from the model fit with this temperature measurement. Figure \ref{fig:temp} displays the average minimum HI values associated with each grid cell and shows a clear spatial distribution, with higher temperatures concentrated near the city center. 
+% Note that the DIC values in Table \ref{DIC} 
+% are all very close, indicating little difference in model fit between the different variables.  This is, perhaps, due to the fact that the covariates enter our model at the mean intensity surface layer (in the regression for $\boldsymbol{\mu}$) at which point it is difficult to distinguish between the different heat variables. That is, because $\boldsymbol{\mu}$ captures both the 911 calls and mortalities, it is possible that any of the measured heat variables explain the combined impact of heat on ``health'' whereas specific heat variables better explain specific health outcomes.
 
-\textcolor{red}{Recall that in \eqref{mu} $\boldsymbol{\mu}$ can be regressed on covariates $\mathbf{X}$ in order to account for potential confounding effects. For all models that we considered $\mathbf{X}$ included an intercept term and temperature data detailed above. Table \ref{tab:model_comparison} shows which additional demographic variables were included in $\mathbf{X}$ as well as indicating whether or not two-way interaction terms were also included in each model. The DIC in the final column of the table indicates that Model X provides the best fit for the data, and so the rest of this paper refers to this model. The percentage of people without air conditioning was taken from the Harris County tax assessor parcel database while all remaining covariates were taken from 2000 U.S. Census Data. Both data sources were aligned with our discrete grid using the method described in Section \ref{likelayer}. }
+\textcolor{red}{Recall from \eqref{mu} that $\boldsymbol{\mu}$ can be regressed on covariates $\mathbf{X}$ in order to account for potential confounding effects. For all models that we considered $\mathbf{X}$ included an intercept term and the temperature data detailed above. Table \ref{tab:model_comparison} shows which additional demographic variables were included in $\mathbf{X}$ as well as indicating whether or not interactions with temperature were also considered. The potential confounding variables we examined were all characteristics of the grid cell and include the percentage of the population over 65 years old, percentage of the population under 5 years old, percentage of the population that is Black, percentage of the population that is Hispanic, percentage of the population without central air conditioning, and the percentage of residential buildings in the grid cell that are categorized as ``low,'' ``very low,'' or ``poor'' quality in the Harris County tax assessor parcel database. The percentage of people without air conditioning and percentage of low quality buildings were taken from the aforementioned Harris County database while all remaining covariates were taken from 2010 U.S. Census Data. Both data sources were aligned with our discrete grid using the method described in Section \ref{likelayer}. The DIC values listed in the final column of Table \ref{tab:model_comparison} indicate that \textcolor{blue}{Model X} provides the best fit for the data, and so the rest of this paper refers to this model.}
 
 
 
-% Table created by stargazer v.5.2 by Marek Hlavac, Harvard University. E-mail: hlavac at fas.harvard.edu
-% Date and time: Tue, Nov 03, 2015 - 15:11:28
+% % Table created by stargazer v.5.2 by Marek Hlavac, Harvard University. E-mail: hlavac at fas.harvard.edu
+% % Date and time: Tue, Nov 03, 2015 - 15:11:28
 \begin{table}
   \caption{DIC values for models fit with different temperature measurements.} 
   \label{DIC} 
@@ -484,42 +483,61 @@ are all very close, indicating little difference in model fit between the differ
 \hline \\[-1.8ex]  
 Temperature Measurement & DIC \\
 \hline \\[-1.8ex]  
-HI Max & $220474$ \\ 
-HI Min & $221016$ \\ 
-T2 Max & $220998$ \\ 
-T2 Min & $220999$ \\ 
-SWBG Max & $221008$ \\ 
-SWBG Min & $221021$ \\ 
+HI Max & $220845$ \\ 
+HI Min & $220733$ \\ 
+T2 Max & $220823$ \\ 
+T2 Min & $220830$ \\ 
+SWBG Max & $220772$ \\ 
+SWBG Min & $220825$ \\ 
 \hline \\[-1.8ex] 
 \end{tabular} 
 \end{table} 
 
+% Table created by stargazer v.5.2 by Marek Hlavac, Harvard University. E-mail: hlavac at fas.harvard.edu
+% Date and time: Tue, Nov 03, 2015 - 15:11:28
+% \begin{table}%\centering 
+%   \caption{DIC Values for Models Fit Using Each Temperature Measurement.} 
+%   \label{DIC} 
+% \begin{tabular}{@{\extracolsep{5pt}} cc} 
+% \\[-1.8ex]\hline
+% \hline \\[-1.8ex]  
+% Temperature Measurement & DIC \\
+% \hline \\[-1.8ex]  
+% HI Max & $221125$ \\ 
+% HI Min & $221123$ \\ 
+% T2 Max & $221155$ \\ 
+% T2 Min & $221151$ \\ 
+% SWBG Max & $221168$ \\ 
+% SWBG Min & $221131$ \\ 
+% \hline \\[-1.8ex] 
+% \end{tabular} 
+% \end{table} 
 
 
 \begin{table}
-  \caption{In order to control for potential confounding effects, we compared 15 different models that included a variety of demographic variables and two-way interactions. The variables included in each model and whether or not interaction terms were considered is indicated in the table below. We also include DIC in order to compare models and select the one that provides the best fit.}
+  \caption{In order to control for potential confounding effects, we compared 15 different models that included a variety of demographic variables and two-way interactions. All models included the temperature variable. The table below indicates which additional variables were included in each model and whether or not interaction with temperature was considered. For example, Model 09 includes temperature, percent over 65, percent under 5, and all two-way interactions with temperature. We also include DIC in order to compare models and select \textcolor{blue}{Model XX} as providing the best fit.}
   \label{tab:model_comparison}
 
-  \begin{tabular}{@{\extracolsep{5pt}} lccccccccc|c}
+  \begin{tabular}{@{\extracolsep{5pt}} lccccccc|c}
   \\[-1.8ex]\hline
   \hline \\[-1.8ex]
-  & \multicolumn{9}{c}{Variables} & \\
-  & \rot{\% over 65} & \rot{\% under 5} & \rot{\% Black} & \rot{\% Hispanic} & \rot{\% w/o AC} & \rot{\% disabled} & \rot{\% living alone} & \rot{\% in poverty} & \rot{Interactions} & DIC \\\hline
-  Model 01 &   &   &   &   &   &   &   &   &   & 12345 \\
-  Model 02 & X & X &   &   &   &   &   &   &   & 12345 \\
-  Model 03 &   &   & X & X &   &   &   &   &   & 220523 \\
-  Model 04 &   &   &   &   & X & X & X & X &   & 220482 \\
-  Model 05 & X & X & X & X &   &   &   &   &   & 220526 \\
-  Model 06 & X & X &   &   & X & X & X & X &   & 220512 \\
-  Model 07 &   &   & X & X & X & X & X & X &   & 220497 \\
-  Model 08 & X & X & X & X & X & X & X & X &   & 220498 \\
-  Model 09 & X & X &   &   &   &   &   &   & X & 220529 \\
-  Model 10 &   &   & X & X &   &   &   &   & X & 220455 \\
-  Model 11 &   &   &   &   & X & X & X & X & X & 220493 \\
-  Model 12 & X & X & X & X &   &   &   &   & X & 220522 \\
-  Model 13 & X & X &   &   & X & X & X & X & X & 12345 \\
-  Model 14 &   &   & X & X & X & X & X & X & X & 12345 \\
-  Model 15 & X & X & X & X & X & X & X & X & X & 12345 \\
+  & \multicolumn{7}{c}{Variables} & \\
+  & \rot{\% over 65} & \rot{\% under 5} & \rot{\% Black} & \rot{\% Hispanic} & \rot{\% w/o AC} & \rot{\% Low Quality Buildings} & \rot{Interactions w/ Temperature} & DIC \\\hline
+  Model 01 &   &   &   &   &   &   &   & 220733 \\
+  Model 02 & X & X &   &   &   &   &   & 220699 \\
+  Model 03 &   &   & X & X &   &   &   & 220796 \\
+  Model 04 &   &   &   &   & X & X &   & 220763 \\
+  Model 05 & X & X & X & X &   &   &   & 220741 \\
+  Model 06 & X & X &   &   & X & X &   & 220809 \\
+  Model 07 &   &   & X & X & X & X &   & 220787 \\
+  Model 08 & X & X & X & X & X & X &   & 220793 \\
+  Model 09 & X & X &   &   &   &   & X & 220788 \\
+  Model 10 &   &   & X & X &   &   & X & 220814 \\
+  Model 11 &   &   &   &   & X & X & X & 220771 \\
+  Model 12 & X & X & X & X &   &   & X & 220822 \\
+  Model 13 & X & X &   &   & X & X & X & 220865 \\
+  Model 14 &   &   & X & X & X & X & X & 220812 \\
+  Model 15 & X & X & X & X & X & X & X & 220872 \\
   \hline\\[-1.8ex]
   \end{tabular}
 
@@ -527,15 +545,15 @@ SWBG Min & $221021$ \\
 
 \begin{figure}
   \centering
-  \includegraphics[width=0.7\textwidth]{imgs/avg_temp.pdf}
-  \caption{Maximum NWS Heat Index in Houston, averaged over the summer months of 1999 -- 2010. Notice that there is a clear concentration of higher temperatures in the center of the city.}
+  \includegraphics[width=0.7\textwidth]{imgs/avg_himin.pdf}
+  \caption{Minimum NWS Heat Index in Houston, averaged over the summer months of 1999 -- 2010. Notice that there is a clear concentration of higher temperatures in the center of the city.}
   \label{fig:temp}
 \end{figure}
 
 \subsection{Risk Maps}
-The maps in Figure \ref{relative_risks} show the posterior estimates for $\boldsymbol\phi^\star_{p}$ where $p\in \{911,\text{Mort}\}$, the log relative risks for each health outcome, and $\boldsymbol\mu$, the vector of log relative risks averaged across all health outcomes. Notice that in Figure \ref{relative_risks}a, the map showing $\boldsymbol\phi^\star_{911}$, the majority of the high risk area is concentrated in the city center. This is in line with the temperature measurements depicted in Figure \ref{fig:temp}, which shows a concentration of higher temperatures in the middle of Houston. Additionally, the area of highest concentration occurs in a downtown location with several parks and other walkable destinations, which may be a potential explanation for why heat-related 911 calls occur with relatively high frequency in this area. 
+The maps in Figure \ref{relative_risks} show the posterior estimates for $\boldsymbol\phi^\star_{p}$, the log relative risks for each health outcome, where $p\in \{911,\text{Mort}\}$, and $\boldsymbol\mu$, the vector of log relative risks averaged across all health outcomes. Notice that in Figure \ref{relative_risks}a, the map showing $\boldsymbol\phi^\star_{911}$, the majority of the high risk area is concentrated in the city center. This is in line with the temperature measurements depicted in Figure \ref{fig:temp}, which shows a concentration of higher temperatures in the middle of Houston. Additionally, the area of highest concentration occurs in a downtown location with several parks and other walkable destinations, which may be a potential explanation for why heat-related 911 calls occur with relatively high frequency in this area. 
 
-There is a somewhat surprising area of extremely high relative risk for 911 calls in the northern part of the city; however, inspection of the underlying geography reveals that much of this area is covered by an airport, resulting in extremely low population levels (fewer than 25 people per square kilometer) yet a relatively large incidence of heat-related 911 calls (4, 6, and 7 phone calls in each of the three affected grid cells, respectively). Another important feature of the 911 call map is that the range for $\boldsymbol\phi^\star_{911}$ is much larger than the range for either $\boldsymbol\phi^\star_{\text{Mort}}$ or $\boldsymbol\mu$ and that far more of the $\boldsymbol\phi^\star_{911}$ values reach into the upper end of the distribution, with 7.4 percent of $\boldsymbol\phi^\star_{911}$ values greater than 1, compared to just 1.2 percent of the elements of $\boldsymbol\phi^\star_{\text{Mort}}$ greater than 1 and less than 1 percent of the elements of $\boldsymbol\mu$ greater than 1. This is likely due to sparsity of data: if more heat-related 911 calls were observed, the associated locations could potentially be more diffuse than those currently observed, leading to lower relative risk scores. Notice also that the credible interval widths (see Figure \ref{relative_risks}b), unsurprisingly, are largest where no 911 calls were observed and estimation of $\phi^\star_{911,k}$ was dependent entirely on spatial correlation. 
+There is a somewhat surprising area of extremely high relative risk for 911 calls in the northern part of the city; however, inspection of the underlying geography reveals that much of this area is covered by an airport, resulting in extremely low population levels (fewer than 25 people per square kilometer) yet a relatively large incidence of heat-related 911 calls (4, 6, and 7 phone calls in each of the three affected grid cells, respectively). Another important feature of the 911 call map is that the range for $\boldsymbol\phi^\star_{911}$ is much larger than the range for either $\boldsymbol\phi^\star_{\text{Mort}}$ or $\boldsymbol\mu$ and that far more of the $\boldsymbol\phi^\star_{911}$ values reach into the upper end of the distribution, with \textcolor{blue}{7.4} percent of $\boldsymbol\phi^\star_{911}$ values greater than 1, compared to just \textcolor{blue}{1.2} percent of the elements of $\boldsymbol\phi^\star_{\text{Mort}}$ greater than 1 and \textcolor{blue}{less than 1} percent of the elements of $\boldsymbol\mu$ greater than 1. This is likely due to sparsity of data: if more heat-related 911 calls were observed, the associated locations could potentially be more diffuse than those currently observed, leading to lower relative risk scores. Notice also that the credible interval widths (see Figure \ref{relative_risks}b), unsurprisingly, are largest where no 911 calls were observed and estimation of $\phi^\star_{911,k}$ was dependent entirely on spatial correlation. 
 
 The risk map depicting $\boldsymbol\phi^\star_{\text{Mort}}$ shown in Figure \ref{relative_risks}c also displays a concentration of high relative risk in the city center, but additionally shows a clear ``Y''-shaped pattern extending from the middle of the city. Reasons for this difference in distribution are not immediately clear, although it is worth noting that the pattern roughly coincides with several arterial thoroughfares. This demonstrates a clear difference in the spatial distribution of heat-related mortalities when compared to the spatial distribution of the 911 calls. Due to the profusion of mortality data, the associated credible interval widths are much narrower than those for the 911 call data, although many of the intervals near the city periphery are still quite large.
 
@@ -543,56 +561,62 @@ Figure \ref{relative_risks}e shows the spatial distribution of $\boldsymbol\mu$ 
 
 
 \begin{figure}
-  \begin{minipage}[t]{0.48\textwidth}
+  \begin{minipage}[t]{0.49\textwidth}
     \centering
-    \includegraphics[width=1.0\textwidth]{./imgs/911calls_rr.pdf}
+    \includegraphics[width=1.0\textwidth]{./imgs/relative_risk_911.pdf}
     \\
     a) 911 Data
     \\
     % rr-911
   \end{minipage}
   \hfill
-  \begin{minipage}[t]{0.48\textwidth}
+  \begin{minipage}[t]{0.49\textwidth}
     \centering
-    \includegraphics[width=1.0\textwidth]{imgs/911calls_ciwidths.pdf}
+    \includegraphics[width=1.0\textwidth]{imgs/ci_width_911.pdf}
     \\
     b) 95\% CI Widths for 911 Data
     \\
 %     \label{rr-911-ci}
   \end{minipage}
-  \begin{minipage}[t]{0.48\textwidth}
+  \begin{minipage}[t]{0.49\textwidth}
     \centering
-    \includegraphics[width=1.0\textwidth]{./imgs/mortality_rr.pdf}
+    \includegraphics[width=1.0\textwidth]{./imgs/relative_risk_death.pdf}
     c) Mortality Data
+    \\
 %     \label{rr-mort}
   \end{minipage}
   \hfill
-    \begin{minipage}[t]{0.48\textwidth}
+    \begin{minipage}[t]{0.49\textwidth}
     \centering
-    \includegraphics[width=1.0\textwidth]{imgs/mortality_ciwidths.pdf}
+    \includegraphics[width=1.0\textwidth]{imgs/ci_width_death.pdf}
+    \\
     d) 95\% CI Widths for Mortality Data
+    \\
 %     \label{rr-mortality-ci}
   \end{minipage}
-  \begin{minipage}[t]{0.48\textwidth}
+  \begin{minipage}[t]{0.49\textwidth}
     \centering
-    \includegraphics[width=1.0\textwidth]{./imgs/overall_rr.pdf}
+    \includegraphics[width=1.0\textwidth]{./imgs/relative_risk_mu.pdf}
+    \\
     e) Overall
+    \\
 %     \label{rr-overall}
   \end{minipage}
   \hfill
-  \begin{minipage}[t]{0.48\textwidth}
+  \begin{minipage}[t]{0.49\textwidth}
     \centering
-    \includegraphics[width=1.0\textwidth]{imgs/overall_ciwidths.pdf}
+    \includegraphics[width=1.0\textwidth]{imgs/ci_width_mu.pdf}
+    \\
     f) 95\% CI Widths for Overall Relative Risk
+    \\
 %     \label{rr-overall-ci}
   \end{minipage}
   \caption{Log relative risk maps and 95\% HPD credible interval (CI) widths for 911 calls, mortalities, and overall risk. The spatial distribution for the different health outcomes is obviously different, but the map of the overall relative risks shows evidence that information was successfully borrowed from both health outcomes.}
   \label{relative_risks}
 \end{figure}
 
-In Table 2
-%\ref{tab:beta_coeff}
- we see the estimates for the $\boldsymbol\beta$ coefficients estimated as part of the mean of $\boldsymbol\mu$. None of the associated credible intervals contain zero, and so we conclude that each of the variables included in this mean has a statistically significant relationship with the average relative risk across all health outcomes. We see that each of the variables considered has a positive relationship with relative risk, and that as average heat index, percent of people in a grid cell over 65, and the number of people without central air conditioning in a grid cell all increase, so does the average relative risk. These effects come as no surprise: examination of the demographic variables in Section \ref{sec:demo_vars} shows that heat-related mortalities were much more likely to occur for people older than 65, and further, as our response variables are associated with extreme heat, it makes sense that as heat increases or the ability to mitigate the effects of heat decreases (fewer people with air conditioning) the incidence of negative health outcomes associated with increased levels of heat should also increase. 
+\textcolor{blue}{In Table \ref{tab:beta_coeff} 
+ we see the estimates for the $\boldsymbol\beta$ coefficients estimated as part of the mean of $\boldsymbol\mu$. None of the associated credible intervals contain zero, and so we conclude that each of the variables included in this mean has a statistically significant relationship with the average relative risk across all health outcomes. We see that each of the variables considered has a positive relationship with relative risk, and that as average heat index, percent of people in a grid cell over 65, and the number of people without central air conditioning in a grid cell all increase, so does the average relative risk. These effects come as no surprise: examination of the demographic variables in Section \ref{sec:demo_vars} shows that heat-related mortalities were much more likely to occur for people older than 65, and further, as our response variables are associated with extreme heat, it makes sense that as heat increases or the ability to mitigate the effects of heat decreases (fewer people with air conditioning) the incidence of negative health outcomes associated with increased levels of heat should also increase.}
 
 % % Table created by stargazer v.5.2 by Marek Hlavac, Harvard University. E-mail: hlavac at fas.harvard.edu
 % % Date and time: Tue, Nov 03, 2015 - 12:25:29
@@ -613,11 +637,11 @@ No Air Conditioning & $0.004$ & $(0.003, 0.006)$ \\
 \end{table}  
 
 \subsection{Demographic Variables}\label{sec:demo_vars}
-
-Estimation of $\boldsymbol\alpha_p$, $\boldsymbol\gamma_p$, and $\boldsymbol\xi_p$ reveals some distinct differences between the subpopulations experiencing the two different health outcomes in our model. To begin with, Table 3
-%$\ref{gendertab}$ 
-shows that while heat-related mortalities are slightly more likely to occur to females than males ($0.51$ versus $0.49$), the probability of a heat-related 911 call occurring for a male is about $0.68$ compared to a probability of just $0.32$ for women. Examination of Table 4 %$\ref{ethnicitytab}$% 
-reveals that population differences between the health outcomes are not limited to gender. The probabilities that a heat-related mortality occurs for an Asian, black, Hispanic or white individual are $0.02$, $0.36$, $0.11$ and $0.5$, respectively. Conversely, the comparable probabilities of a heat-related 911 call taking place are $0.02$, $0.46$, $0.26$, and $0.27$.  Figure $\ref{pp-age}$ shows that the probabilities for our last demographic variable, age, also differ greatly by health outcome, with the largest $\xi_{911}$ values occurring between 25 and 50, compared with the largest $\xi_{\text{Mort}}$ values clearly occurring above 75. We can also see that while it is extremely rare for a young child to experience a heat-related mortality the probability is much higher for 911 calls suggesting that while young children experience adverse effects from extreme heat they are unlikely to result in death. 
+% Estimation of $\boldsymbol\alpha_p$, $\boldsymbol\gamma_p$, and $\boldsymbol\xi_p$ reveals some distinct differences between the subpopulations experiencing the two different health outcomes in our model. To begin with, Table \ref{gendertab} shows that while heat-related mortalities are slightly more likely to occur to females than males ($0.51$ versus $0.49$), the probability of a heat-related 911 call occurring for a male is about $0.68$ compared to a probability of just $0.32$ for women. Examination of Table \ref{ethnicitytab}
+% reveals that population differences between the health outcomes are not limited to gender. The probabilities that a heat-related mortality occurs for an Asian, black, Hispanic or white individual are $0.02$, $0.36$, $0.11$ and $0.5$, respectively. Conversely, the comparable probabilities of a heat-related 911 call taking place are $0.02$, $0.46$, $0.26$, and $0.27$.  Figure $\ref{pp-age}$ shows that the probabilities for our last demographic variable, age, also differ greatly by health outcome, with the largest $\xi_{911}$ values occurring between 25 and 50, compared with the largest $\xi_{\text{Mort}}$ values clearly occurring above 75. We can also see that while it is extremely rare for a young child to experience a heat-related mortality the probability is much higher for 911 calls suggesting that while young children experience adverse effects from extreme heat they are unlikely to result in death. 
+\textcolor{red}{When considering the effects associated with age, gender, and ethnicity, $\delta_{911}$ and $\delta_{\text{Mort}}$ provide critical context. For example, Table \ref{gendertab} shows that heat-related mortalities are slightly more common for females than males ($0.51$ vs. $0.49$). While this may not seem like a significant difference, multiplying these values by the posterior mean for $\delta_{\text{mort}}$ reveals that these probabilities represent a count of about 7766 incidents for males and 7461 for females, a difference of approximately 300 mortalities. 
+Estimation of $\boldsymbol\alpha_p$, $\boldsymbol\gamma_p$, and $\boldsymbol\xi_p$ reveals some distinct differences between the subpopulations experiencing the two different health outcomes in our model. As already mentioned, Table \ref{gendertab} shows that heat-related mortalities are slightly more likely to occur to females than males ($0.51$ versus $0.49$); however this Table also shows that the probability of a heat-related 911 call occurring for a male is about $0.68$ compared to a probability of just $0.32$ for women. The lack of overlap in the highest posterior density (HPD) intervals suggests that the effect of gender for both 911 calls and mortalities is statistically significant. Examination of Table \ref{ethnicitytab}
+reveals that population differences between the health outcomes are not limited to gender. The probabilities that a heat-related mortality occurs for an Asian, Black, Hispanic or White individual are $0.02$, $0.36$, $0.11$ and $0.5$, respectively. Conversely, the comparable probabilities of a heat-related 911 call taking place are $0.02$, $0.46$, $0.26$, and $0.27$.  Again, we see very little overlap in the HPD intervals. When looking at 911 calls, there is a high degree of overlap between Whites and Hispanics, but neither Blacks nor Asians have any overlap with any of the other ethnicities. When considering mortalities, there is no overlap in the credible intervals between any of the ethnicities. Figure $\ref{pp-age}$ shows that the probabilities for our last demographic variable, age, also differ greatly by health outcome, with the largest $\xi_{911}$ values occurring between 25 and 50, compared with the largest $\xi_{\text{Mort}}$ values clearly occurring above 75. We can also see that while it is extremely rare for a young child to experience a heat-related mortality the probability is much higher for 911 calls suggesting that while young children experience adverse effects from extreme heat they are unlikely to result in death.}
 
 Estimation of the effects of these demographic variables allows us to develop a profile for the type of person most likely to be impacted by extreme heat in a way that results in a specific health outcome. For example, we would expect heat-related mortalities to occur most often for white men and women older than 75 years while we expect heat-related 911 calls to occur most frequently for black males between 25 and 50 years old. These differences show that the effects of extreme heat are not uniform across a population and provide additional evidence that modeling multiple health outcomes, as we've done here, is a necessary step in understanding the total health impact of heat. 
 
@@ -630,7 +654,7 @@ Estimation of the effects of these demographic variables allows us to develop a 
   \hfill
   \begin{minipage}{0.49\textwidth}
     \centering
-    \includegraphics[width=1.0\textwidth]{./imgs/delta_mortality.pdf}
+    \includegraphics[width=1.0\textwidth]{./imgs/delta_death.pdf}
   \end{minipage}
   \caption{Posterior density plots for $\delta_{911}$ and $\delta_{\text{Mort}}$. The posterior mean for $\delta_{911}$ is 1387 and the posterior mean for $\delta_{\text{Mort}}$ is 15228}
   \label{fig:delta_kde}
@@ -676,7 +700,7 @@ Estimation of the effects of these demographic variables allows us to develop a 
 
 \begin{figure}
     \centering
-    \includegraphics[width=1.0\textwidth]{imgs/pp_age.pdf}
+    \includegraphics[width=1.0\textwidth]{imgs/age_probability.pdf}
     \caption{Posterior probabilities and 95\% HPD intervals associated with each age by health outcome. Notice that there are distinctly different patterns associated with the different health outcomes, again supporting the idea that it is necessary to consider multiple effects in order to understand the total impact of heat.}
     \label{pp-age}
 \end{figure}
